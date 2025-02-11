@@ -1,13 +1,13 @@
 -- Ctrl + F7 - indentar a tabela
 
 CREATE TABLE pais (
-    id_pais   NUMBER,
+    id_pais   NUMBER PRIMARY KEY,
     nome_pais VARCHAR2(30)
 );
 
 CREATE TABLE estado (
     id_estado   NUMBER PRIMARY KEY,
-    nome_estado VARCHAR2,
+    nome_estado VARCHAR2(30),
     id_pais     NUMBER
 );
 
@@ -17,7 +17,7 @@ ALTER TABLE estado
 
 CREATE TABLE cidade (
     id_cidade   NUMBER PRIMARY KEY,
-    nome_estado VARCHAR2,
+    nome_cidade VARCHAR2(30),
     id_estado   NUMBER
 );
 
@@ -27,7 +27,7 @@ ALTER TABLE cidade
 
 CREATE TABLE bairro (
     id_bairro   NUMBER PRIMARY KEY,
-    nome_bairro VARCHAR2,
+    nome_bairro VARCHAR2(50),
     id_cidade   NUMBER
 );
 
@@ -44,6 +44,6 @@ CREATE TABLE end_cliente (
     id_bairro   NUMBER
 );
 
-ALTER TABLE bairro
+ALTER TABLE end_cliente
     ADD CONSTRAINT fk_end_client FOREIGN KEY ( id_bairro )
         REFERENCES bairro ( id_bairro );
