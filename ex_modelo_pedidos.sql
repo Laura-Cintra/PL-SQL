@@ -7,7 +7,7 @@ SET SERVEROUTPUT ON;
 
 DECLARE
     v_movimentacoes NUMBER;
-    v_cod_prod NUMBER := 16; -- &cod_produto
+    v_cod_prod NUMBER := 16;
 BEGIN
     SELECT SUM(qtd_movimentacao_estoque)INTO v_movimentacoes
     FROM movimento_estoque
@@ -20,7 +20,7 @@ END;
 DECLARE
     v_total_pedidos NUMBER := 0;
     v_quant_prod NUMBER := 0;
-    v_cod_cliente NUMBER := 88; -- $cod_cliente
+    v_cod_cliente NUMBER := 88;
 BEGIN
     SELECT COUNT(1) INTO v_quant_prod
     FROM pedido
@@ -45,7 +45,7 @@ END;
 
 DECLARE
     v_total_movimentacoes NUMBER := 0;
-    v_cod_prod NUMBER := 16;
+    v_cod_prod NUMBER := 22;
 BEGIN
     SELECT SUM(qtd_movimentacao_estoque)
     INTO v_total_movimentacoes
@@ -82,7 +82,7 @@ BEGIN
             tbl_p.cod_pedido, tbl_p.dat_pedido, tbl_p.val_total_pedido, tbl_c.nom_cliente, tbl_c.tip_pessoa, tbl_p.status
         FROM cliente tbl_c
             RIGHT JOIN pedido tbl_p ON tbl_p.cod_cliente = tbl_c.cod_cliente
-        WHERE ROWNUM <= 50
+        WHERE ROWNUM <= 50 -- evitando erro
     ) LOOP
         dbms_output.put_line('--------------------------------');
         dbms_output.put_line('Pedido: ' || i.cod_pedido);
@@ -102,7 +102,7 @@ END;
 DECLARE
     v_total_pedidos NUMBER := 0;
     v_quant_ped NUMBER := 0;
-    v_cod_cliente NUMBER := 88;
+    v_cod_cliente NUMBER := 14;
 BEGIN
     SELECT COUNT(tbl_p.val_total_pedido), SUM(tbl_p.val_total_pedido)
     INTO v_quant_ped, v_total_pedidos
