@@ -153,12 +153,51 @@ END prc_relatorio_composicao_ativa;
 CALL prc_relatorio_composicao_ativa(25);
 
 -- Ex 5
-
 SELECT a.val_total_pedido, a.val_desconto, a.status FROM pedido a WHERE a.cod_pedido = 131232;
-
 -- processando, pendente, concluído
 
-SELECT * FROM historico_pedido;
-SELECT * FROM pedido;
-SELECT * FROM produto_composto;
-SELECT * FROM movimento_estoque;
+CREATE OR REPLACE PROCEDURE prc_relatorio_pedido (
+    p_cod_pedido NUMBER
+) IS
+    v_status VARCHAR2(20);
+    error_not_found EXCEPTION;
+    v_encontrou_pedido BOOLEAN := FALSE;
+BEGIN
+    FOR i IN (
+        SELECT 
+            a.val_total_pedido,
+            a.val_desconto,
+            a.status,
+            b.cod_item_pedido
+        FROM
+            pedido a 
+            JOIN item_pedido b ON a.cod_pedido = b.cod_pedido 
+        WHERE 
+            a.cod_pedido = p_cod_pedido
+    ) LOOP
+        v_encontrou_pedido := TRUE;
+        IF LOWER(i.status) IN ('pendente', 'processando') THEN
+            v_status := 'PENDENTE';
+        ELSE
+            v_status := 'ENTREGUE';
+        END IF;
+        dbms_output.put_line('Código item pedido: ' || i.cod_item_pedido);
+        dbms_output.put_line('Código do pedido: ' || p_cod_pedido);
+        dbms_output.put_line('Valor total: ' || i.val_total_pedido);
+        dbms_output.put_line('Valor do desconto: ' || i.val_desconto);
+        dbms_output.put_line('Status: ' || v_status);
+        dbms_output.put_line('-----------------------------------------------');
+    END LOOP;
+    IF NOT v_encontrou_pedido THEN
+        RAISE error_not_found;
+    END IF;
+EXCEPTION
+    WHEN error_not_found THEN
+        raise_application_error(-20046, 'Erro: o pedido não existe ou não possui itens');
+    WHEN program_error THEN
+        raise_application_error(-20002, 'Erro no servidor!');
+    WHEN OTHERS THEN
+        raise_application_error(-20005, 'Erro desconhecido: ' || SQLERRM);
+END;
+
+CALL prc_relatorio_pedido(130506);
