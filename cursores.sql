@@ -1,0 +1,3 @@
+-- === Cursores ===
+-- implícito: select
+-- permitem que um comando SELECT possa retornar múltiplas linhas e as mesmas possam ser tratadas uma a uma pelo bloco PL/SQL
