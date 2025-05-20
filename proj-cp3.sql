@@ -10,6 +10,9 @@ SET SERVEROUTPUT ON;
 -- categoria = nome do produto?
 SELECT * FROM movimento_estoque WHERE EXTRACT(MONTH FROM dat_movimento_estoque) = EXTRACT(MONTH FROM SYSDATE);
 
+-- outra alternativa - gambiarra
+SELECT TO_CHAR(SYSDATE,'MM') FROM DUAL;
+
 CREATE OR REPLACE FUNCTION fn_categoria_movimentada
 RETURN VARCHAR2
 IS
@@ -104,13 +107,22 @@ BEGIN
     dbms_output.put_line('Produto: ' || p_cod_produto || ' | Total de movimentações: ' || p_total);
 END;
 
+-- Testando - usamos esse formato pois ele espera um parâmetro de saída (out)
+SET SERVEROUTPUT ON;
+DECLARE
+    v_total NUMBER;
+BEGIN
+    sp_qtd_movimentos_produto(5, v_total);
+END;
+
 -- Ex 5 - atualize todos os produtos da categoria e de uma categoria específica, apenas se sua movimentação total for inferior a 50 unidades. Use cursor + LOOP com UPDATE.
+
 CREATE OR REPLACE PROCEDURE atualizar_categoria_simulada IS
 
   CURSOR c_produtos IS
     SELECT cod_produto, nom_produto, cod_barra
     FROM produto
-    WHERE nom_produto = 'Notebook'; -- simulando categoria
+    WHERE nom_produto = 'Mouse'; -- simulando categoria
   v_total_movimentacao NUMBER;
 
 BEGIN
@@ -129,16 +141,12 @@ BEGIN
       dbms_output.put_line('Produto atualizado: ' || p.nom_produto || 
                            ' | Novo cod_barra: ' || SUBSTR(p.cod_barra || '_ATLD', 1, 20));
     END IF;
-
   END LOOP;
-
   COMMIT;
-
 END;
 
-
-CALL atualizar_categoria_simulada(); 
-
+SET SERVEROUTPUT ON;
+CALL atualizar_categoria_simulada();
 
 -- Ex 6 - crie uma procedure que para cada produto, busque as datas e quantidades dos movimentos
 
@@ -178,7 +186,7 @@ BEGIN
   END LOOP;
 END;
 
-CALL p_historico_produtos(); 
+CALL p_historico_produtos();
 
 -- Ex 7 - crie `sp_relatorio_geral_movimento` que exiba o total movimentado por tipo de movimento (entrada/saída), inclusive aqueles sem registro associado (produto ou tipo). Use GROUP BY.
 
@@ -203,16 +211,7 @@ END;
 
 CALL sp_relatorio_geral_movimento();
 
-
--- Testando - usamos esse formato pois ele espera um parâmetro de saída (out)
-
 -- Ex 8 - bloco anônimo que tenta inserir um novo produto já existente e capture o erro ORA-00001
-SET SERVEROUTPUT ON;
-DECLARE
-    v_total NUMBER;
-BEGIN
-    sp_qtd_movimentos_produto(5, v_total);
-END;
 
 DECLARE
     v_cod_produto PRODUTO.COD_PRODUTO%TYPE := 1;
